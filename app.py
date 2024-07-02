@@ -1,10 +1,6 @@
 from openai import OpenAI
 import streamlit as st
-import toml
 from utils import api_key_check
-
-with open('.streamlit/secrets.toml') as f:
-    secrets = toml.load(f)
 
 # if "key_input_disabled" not in st.session_state:
 #     st.session_state["key_input_disabled"] = False
@@ -21,8 +17,8 @@ with st.sidebar:
 
     # Add a text input field for the OpenAI API key
     openai_api_key = st.text_input(
-        "OpenAI API Key", key="chatbot_api_key", type="password",
-        value=None)
+        "OpenAI API Key", key="chatbot_api_key", type="password", value=None
+    )
 
     if openai_api_key is not None:
         if api_key_check(openai_api_key):
@@ -33,27 +29,25 @@ with st.sidebar:
             st.error("API key is invalid")
 
     st.write(
-    "[How to get an OpenAI API key](https://platform.openai.com/account/api-keys)")
+        "[How to get an OpenAI API key](https://platform.openai.com/account/api-keys)"
+    )
 
-    password = st.text_input("Password", value = None,
-                             type="password")
-    if password is not None and password == secrets['PASSWORD']:
-        openai_api_key = secrets['OPENAI_API_KEY']
+    password = st.text_input("Password", value=None, type="password")
+    if password is not None and password == st.secrets["PASSWORD"]:
+        openai_api_key = st.secrets["OPENAI_API_KEY"]
         st.session_state["valid_key"] = True
         st.success("Correct password")
-    elif password is not None and password != secrets['PASSWORD']:
+    elif password is not None and password != st.secrets["PASSWORD"]:
         st.session_state["valid_key"] = False
         st.error("Incorrect password")
 
     # radio button for selecting the model
     model_choice = st.radio(
-        "Select a model",
-        ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4", "gpt-4o"],
-        index=0
+        "Select a model", ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4", "gpt-4o"], index=0
     )
-    
+
     stream_choice = st.checkbox("Stream Response", value=True)
-    
+
 st.title("💬 Chatbot")
 st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 
@@ -61,7 +55,8 @@ st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 if "messages" not in st.session_state:
     # If not, initialize it with a default message from the assistant
     st.session_state["messages"] = [
-        {"role": "assistant", "content": "How can I help you?"}]
+        {"role": "assistant", "content": "How can I help you?"}
+    ]
 
 if not openai_api_key and not st.session_state["valid_key"]:
     # Display an info message if the API key is missing
@@ -83,13 +78,13 @@ if prompt := st.chat_input():
 
     # Create an instance of the OpenAI client with the API key
     client = OpenAI(api_key=openai_api_key)
-    
+
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
-        
+
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         output = client.chat.completions.create(
@@ -106,5 +101,5 @@ if prompt := st.chat_input():
             msg = output.choices[0].message.content
             st.markdown(msg)
             # st.chat_message("assistant").write(msg)
-        
+
     st.session_state.messages.append({"role": "assistant", "content": msg})
