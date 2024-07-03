@@ -43,7 +43,7 @@ with st.sidebar:
 
     # radio button for selecting the model
     model_choice = st.radio(
-        "Select a model", ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4", "gpt-4o"], index=0
+        "Select a model", ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o"], index=0
     )
 
     stream_choice = st.checkbox("Stream Response", value=True)
