@@ -4,7 +4,7 @@ from utils import api_key_check, get_model_cost, calc_total_cost
 import pandas as pd
 
 with st.expander("Show cost table"):
-    prices = pd.read_csv(r"assets\openai_models.csv")
+    prices = pd.read_csv(r"assets\\openai_models.csv")
     st.write(prices)
 
 if "valid_key" not in st.session_state:
@@ -56,7 +56,7 @@ with st.sidebar:
     model_choice = st.radio(
         "Select a model", ["gpt-3.5-turbo", "gpt-4o", "gpt-4-turbo"], index=0
     )
-    input_cost, output_cost = get_model_cost(model_choice)
+    input_cost, output_cost = get_model_cost(model_choice, prices)
     st.write(f"**Input cost:** {input_cost:.4f} cent/token")
     st.write(f"**Output cost:** {output_cost:.4f} cent/token")
 
