@@ -1,0 +1,5 @@
+Provider,Model,Context,Input/1k Tokens,Output/1k Tokens,Per Call,Total
+OpenAI / Azure,gpt-3.5-turbo,16K,0.0005,0.0015,$0.0008,0.08
+OpenAI,gpt-4o,128K,0.005,0.015,0.0080,0.80
+OpenAI / Azure,gpt-4-turbo,128K,0.01,0.03,0.0160,1.60
+OpenAI / Azure,gpt-4,8K,0.03,0.06,0.0330,3.30
