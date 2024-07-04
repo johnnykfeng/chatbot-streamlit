@@ -4,7 +4,9 @@ from utils import api_key_check, get_model_cost, calc_total_cost
 import pandas as pd
 
 with st.expander("Show cost table"):
-    prices = pd.read_csv(r"assets\\openai_models.csv")
+    # file_path = r"https://github.com/johnnykfeng/chatbot-streamlit/blob/main/assets/openai_models.csv"
+    file_path = r"./assets/openai_models.csv"
+    prices = pd.read_csv(file_path)
     st.write(prices)
 
 if "valid_key" not in st.session_state:
