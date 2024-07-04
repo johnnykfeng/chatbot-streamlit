@@ -54,7 +54,7 @@ with st.sidebar:
     st.write(f"**Input cost:** {input_cost:.4f} cent/token")
     st.write(f"**Output cost:** {output_cost:.4f} cent/token")
 
-    stream_choice = st.checkbox("Stream Response", value=True)
+    stream_choice = st.checkbox("Stream Response", value=False)
 
 st.title("💬 Chatbot")
 st.caption("🚀 A Streamlit chatbot powered by OpenAI")
