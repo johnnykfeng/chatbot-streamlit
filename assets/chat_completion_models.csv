@@ -1,8 +1,8 @@
 Provider,Model,Context,Input/1k Tokens,Output/1k Tokens,Per Call,Total
-OpenAI,GPT-4o (omni),128K,$0.005,$0.015,$0.0080,$0.80
-OpenAI / Azure,GPT-4 Turbo,128K,$0.01,$0.03,$0.0160,$1.60
-OpenAI / Azure,GPT-3.5 Turbo,16K,$0.0005,$0.0015,$0.0008,$0.08
-OpenAI / Azure,GPT-4,8K,$0.03,$0.06,$0.0330,$3.30
+OpenAI,gpt-4o,128K,0.005,0.015,0.0080,0.80
+OpenAI / Azure,gpt-4-turbo,128K,0.01,0.03,0.0160,1.60
+OpenAI / Azure,gpt-3.5-turbo,16K,0.0005,0.0015,$0.0008,0.08
+OpenAI / Azure,gpt-4,8K,0.03,0.06,0.0330,3.30
 Anthropic,Claude 3 Haiku,200K,$0.00025,$0.00125,$0.0006,$0.07
 Anthropic,Claude 3 Sonnet,200K,$0.003,$0.015,$0.0078,$0.78
 Anthropic,Claude 3 Opus,200K,$0.015,$0.075,$0.0390,$3.90
