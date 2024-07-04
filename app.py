@@ -1,15 +1,20 @@
 from openai import OpenAI
 import streamlit as st
-from utils import api_key_check
+from utils import api_key_check, get_model_cost, calc_total_cost
+import pandas as pd
 
-# if "key_input_disabled" not in st.session_state:
-#     st.session_state["key_input_disabled"] = False
-
-# if "password_input_disabled" not in st.session_state:
-#     st.session_state["password_input_disabled"] = False
+with st.expander("Show cost table"):
+    prices = pd.read_csv(r"assets\chat_completion_models.csv")
+    st.write(prices)
 
 if "valid_key" not in st.session_state:
     st.session_state["valid_key"] = False
+
+if "last_cost" not in st.session_state:
+    st.session_state["last_cost"] = [0]
+
+if "running_cost" not in st.session_state:
+    st.session_state["running_cost"] = 0
 
 # Create a sidebar in the Streamlit app
 with st.sidebar:
@@ -45,6 +50,9 @@ with st.sidebar:
     model_choice = st.radio(
         "Select a model", ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o"], index=0
     )
+    input_cost, output_cost = get_model_cost(model_choice)
+    st.write(f"**Input cost:** {input_cost:.4f} cent/token")
+    st.write(f"**Output cost:** {output_cost:.4f} cent/token")
 
     stream_choice = st.checkbox("Stream Response", value=True)
 
@@ -64,9 +72,13 @@ if not openai_api_key and not st.session_state["valid_key"]:
     st.stop()
 else:
     # Iterate over each message in the session state
-    for msg in st.session_state.messages:
+    for i, msg in enumerate(st.session_state.messages):
         # Display the message in the chat interface
         st.chat_message(msg["role"]).write(msg["content"])
+        if msg["role"] == "assistant":
+            j = int(i/2)
+            st.caption(
+                f"Answer cost: {st.session_state['last_cost'][j]:.4f} cents")
 
 # Check if the user has entered a prompt in the chat input field
 if prompt := st.chat_input():
@@ -87,7 +99,7 @@ if prompt := st.chat_input():
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        output = client.chat.completions.create(
+        response = client.chat.completions.create(
             model=model_choice,
             messages=[
                 {"role": m["role"], "content": m["content"]}
@@ -95,11 +107,22 @@ if prompt := st.chat_input():
             ],
             stream=stream_choice,
         )
+
         if stream_choice:
-            msg = st.write_stream(output)
+            msg = st.write_stream(response)
         else:
-            msg = output.choices[0].message.content
+            msg = response.choices[0].message.content
             st.markdown(msg)
-            # st.chat_message("assistant").write(msg)
+            st.session_state["last_cost"].append(calc_total_cost(
+                response.usage.prompt_tokens,
+                response.usage.completion_tokens,
+                input_cost,
+                output_cost))
+
+            st.caption(
+                f"Answer cost: {st.session_state['last_cost'][-1]:.4f} cents")
+            st.session_state["running_cost"] += st.session_state["last_cost"][-1]
+            st.caption(
+                f"Running Cost: {st.session_state['running_cost']:.4f} cents")
 
     st.session_state.messages.append({"role": "assistant", "content": msg})
