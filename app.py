@@ -4,7 +4,7 @@ from utils import api_key_check, get_model_cost, calc_total_cost
 import pandas as pd
 
 with st.expander("Show cost table"):
-    prices = pd.read_csv(r"assets\chat_completion_models.csv")
+    prices = pd.read_csv(r"assets\openai_models.csv")
     st.write(prices)
 
 if "valid_key" not in st.session_state:
@@ -15,6 +15,12 @@ if "last_cost" not in st.session_state:
 
 if "running_cost" not in st.session_state:
     st.session_state["running_cost"] = 0
+    
+if "prompt_tokens" not in st.session_state:
+    st.session_state["prompt_tokens"] = [0]
+
+if "completion_tokens" not in st.session_state:
+    st.session_state["completion_tokens"] = [0]
 
 # Create a sidebar in the Streamlit app
 with st.sidebar:
@@ -48,7 +54,7 @@ with st.sidebar:
 
     # radio button for selecting the model
     model_choice = st.radio(
-        "Select a model", ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o"], index=0
+        "Select a model", ["gpt-3.5-turbo", "gpt-4o", "gpt-4-turbo"], index=0
     )
     input_cost, output_cost = get_model_cost(model_choice)
     st.write(f"**Input cost:** {input_cost:.4f} cent/token")
@@ -78,7 +84,10 @@ else:
         if msg["role"] == "assistant":
             j = int(i/2)
             st.caption(
-                f"Answer cost: {st.session_state['last_cost'][j]:.4f} cents")
+                f" Prompt tokens: {st.session_state['prompt_tokens'][j]}" + 
+                f" | Completion tokens: {st.session_state['completion_tokens'][j]}" + 
+                f" | Answer cost: {st.session_state['last_cost'][j]:.4f} ¢"
+            )
 
 # Check if the user has entered a prompt in the chat input field
 if prompt := st.chat_input():
@@ -113,6 +122,9 @@ if prompt := st.chat_input():
         else:
             msg = response.choices[0].message.content
             st.markdown(msg)
+            
+            st.session_state["prompt_tokens"].append(response.usage.prompt_tokens)
+            st.session_state["completion_tokens"].append(response.usage.completion_tokens)
             st.session_state["last_cost"].append(calc_total_cost(
                 response.usage.prompt_tokens,
                 response.usage.completion_tokens,
@@ -120,7 +132,9 @@ if prompt := st.chat_input():
                 output_cost))
 
             st.caption(
-                f"Answer cost: {st.session_state['last_cost'][-1]:.4f} cents")
+                f"Prompt tokens: {st.session_state['prompt_tokens'][-1]}" + 
+                f" | Completion tokens: {st.session_state['completion_tokens'][-1]}" +
+                f" | Answer cost: {st.session_state['last_cost'][-1]:.4f} ¢" )
             st.session_state["running_cost"] += st.session_state["last_cost"][-1]
             st.caption(
                 f"Running Cost: {st.session_state['running_cost']:.4f} cents")
