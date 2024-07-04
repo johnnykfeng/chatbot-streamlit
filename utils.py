@@ -22,8 +22,8 @@ def api_key_check(openai_api_key):
 def get_model_cost(model_choice, prices):
     """Returns the input and output cost of the model in cent/token."""
     row = prices[prices["Model"] == model_choice]
-    input_cost = float(row["Input/1k Tokens"].values[0])/10  # cent/token
-    output_cost = float(row["Output/1k Tokens"].values[0])/10  # cent/token
+    input_cost = float(row["($)Input/1k Tokens"].values[0])/10  # cent/token
+    output_cost = float(row["($)Output/1k Tokens"].values[0])/10  # cent/token
     return input_cost, output_cost
 
 

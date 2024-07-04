@@ -59,8 +59,8 @@ with st.sidebar:
         "Select a model", ["gpt-3.5-turbo", "gpt-4o", "gpt-4-turbo"], index=0
     )
     input_cost, output_cost = get_model_cost(model_choice, prices)
-    st.write(f"**Input cost:** {input_cost:.4f} cent/token")
-    st.write(f"**Output cost:** {output_cost:.4f} cent/token")
+    st.write(f"**Input cost:** {input_cost:.5f} ¢/token")
+    st.write(f"**Output cost:** {output_cost:.5f} ¢/token")
 
     stream_choice = st.checkbox("Stream Response", value=False)
 
@@ -139,6 +139,6 @@ if prompt := st.chat_input():
                 f" | Answer cost: {st.session_state['last_cost'][-1]:.4f} ¢" )
             st.session_state["running_cost"] += st.session_state["last_cost"][-1]
             st.caption(
-                f"Running Cost: {st.session_state['running_cost']:.4f} cents")
+                f"Running Cost: {st.session_state['running_cost']:.4f} ¢")
 
     st.session_state.messages.append({"role": "assistant", "content": msg})
