@@ -11,6 +11,7 @@ openai = "^1.35.8"
 streamlit = "^1.36.0"
 st-pages = "^0.5.0"
 langchain = "^0.2.6"
+pandas = "^2.2.2"
 
 
 [build-system]
