@@ -1,7 +1,8 @@
 import streamlit as st
 import anthropic
 
-st.title("Anthropic API test")
+st.title("Anthropic 🤖")
+st.caption("🚀 A Streamlit chatbot powered by Anthropic")
 
 if "valid_key" not in st.session_state:
     st.session_state["valid_key"] = False
@@ -29,6 +30,10 @@ else:
         st.chat_message(msg["role"]).write(msg["content"])
 
 if prompt := st.chat_input():
+    if not anthropic_api_key:
+        st.info("Please add your Anthropic API key to continue.")
+        st.stop()
+    
     client = anthropic.Anthropic(api_key=anthropic_api_key)
 
     st.session_state.messages.append({"role": "user", "content": prompt})
