@@ -2,9 +2,15 @@ from openai import OpenAI
 import streamlit as st
 from utils import api_key_check, get_model_cost, calc_total_cost
 import pandas as pd
+from st_pages import Page, show_pages
+
+show_pages([
+    Page("app.py", "GPT Chatbot", ""),
+    Page("pages/claude.py", "Claude Chatbot", ""),
+])
+
 
 with st.expander("Show cost table"):
-    # file_path = r"https://github.com/johnnykfeng/chatbot-streamlit/blob/main/assets/openai_models.csv"
     file_path = r"./assets/openai_models.csv"
     prices = pd.read_csv(file_path)
     st.write(prices)
@@ -69,7 +75,6 @@ st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 
 # Check if the "messages" key exists in the session state
 if "messages" not in st.session_state:
-    # If not, initialize it with a default message from the assistant
     st.session_state["messages"] = [
         {"role": "assistant", "content": "How can I help you?"}
     ]

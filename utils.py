@@ -16,9 +16,6 @@ def api_key_check(openai_api_key):
         return False
 
 
-# prices = pd.read_csv(
-#     r"assets\openai_models.csv")
-
 def get_model_cost(model_choice, prices):
     """Returns the input and output cost of the model in cent/token."""
     row = prices[prices["Model"] == model_choice]
