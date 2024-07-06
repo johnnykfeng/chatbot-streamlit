@@ -73,20 +73,16 @@ with st.sidebar:
 st.title("💬 Chatbot")
 st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 
-# Check if the "messages" key exists in the session state
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
         {"role": "assistant", "content": "How can I help you?"}
     ]
 
 if not openai_api_key and not st.session_state["valid_key"]:
-    # Display an info message if the API key is missing
     st.info("Please add your OpenAI API key to continue.")
     st.stop()
 else:
-    # Iterate over each message in the session state
     for i, msg in enumerate(st.session_state.messages):
-        # Display the message in the chat interface
         st.chat_message(msg["role"]).write(msg["content"])
         if msg["role"] == "assistant":
             j = int(i/2)
@@ -98,18 +94,14 @@ else:
 
 # Check if the user has entered a prompt in the chat input field
 if prompt := st.chat_input():
-    # Check if the OpenAI API key is provided
     if not openai_api_key:
-        # Display an info message if the API key is missing
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
 
     # Create an instance of the OpenAI client with the API key
     client = OpenAI(api_key=openai_api_key)
 
-    # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
-    # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
 
@@ -147,3 +139,6 @@ if prompt := st.chat_input():
                 f"Running Cost: {st.session_state['running_cost']:.4f} ¢")
 
     st.session_state.messages.append({"role": "assistant", "content": msg})
+
+with st.expander("Show message history"):
+    st.write(st.session_state.messages)
