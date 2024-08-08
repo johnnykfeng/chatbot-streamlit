@@ -3,6 +3,7 @@ import streamlit as st
 from utils import api_key_check, get_model_cost, calc_total_cost
 import pandas as pd
 from st_pages import Page, show_pages
+import time
 
 show_pages([
     Page("app.py", "GPT Chatbot", ""),
@@ -23,12 +24,17 @@ if "last_cost" not in st.session_state:
 
 if "running_cost" not in st.session_state:
     st.session_state["running_cost"] = 0
-    
+
 if "prompt_tokens" not in st.session_state:
     st.session_state["prompt_tokens"] = [0]
 
 if "completion_tokens" not in st.session_state:
     st.session_state["completion_tokens"] = [0]
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [
+        {"role": "assistant", "content": "How can I help you?"}
+    ]
 
 # Create a sidebar in the Streamlit app
 with st.sidebar:
@@ -73,10 +79,6 @@ with st.sidebar:
 st.title("💬 Chatbot")
 st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [
-        {"role": "assistant", "content": "How can I help you?"}
-    ]
 
 if not openai_api_key and not st.session_state["valid_key"]:
     st.info("Please add your OpenAI API key to continue.")
@@ -87,8 +89,8 @@ else:
         if msg["role"] == "assistant":
             j = int(i/2)
             st.caption(
-                f" Prompt tokens: {st.session_state['prompt_tokens'][j]}" + 
-                f" | Completion tokens: {st.session_state['completion_tokens'][j]}" + 
+                f" Prompt tokens: {st.session_state['prompt_tokens'][j]}" +
+                f" | Completion tokens: {st.session_state['completion_tokens'][j]}" +
                 f" | Answer cost: {st.session_state['last_cost'][j]:.4f} ¢"
             )
 
@@ -121,9 +123,11 @@ if prompt := st.chat_input():
         else:
             msg = response.choices[0].message.content
             st.markdown(msg)
-            
-            st.session_state["prompt_tokens"].append(response.usage.prompt_tokens)
-            st.session_state["completion_tokens"].append(response.usage.completion_tokens)
+
+            st.session_state["prompt_tokens"].append(
+                response.usage.prompt_tokens)
+            st.session_state["completion_tokens"].append(
+                response.usage.completion_tokens)
             st.session_state["last_cost"].append(calc_total_cost(
                 response.usage.prompt_tokens,
                 response.usage.completion_tokens,
@@ -131,9 +135,9 @@ if prompt := st.chat_input():
                 output_cost))
 
             st.caption(
-                f"Prompt tokens: {st.session_state['prompt_tokens'][-1]}" + 
+                f"Prompt tokens: {st.session_state['prompt_tokens'][-1]}" +
                 f" | Completion tokens: {st.session_state['completion_tokens'][-1]}" +
-                f" | Answer cost: {st.session_state['last_cost'][-1]:.4f} ¢" )
+                f" | Answer cost: {st.session_state['last_cost'][-1]:.4f} ¢")
             st.session_state["running_cost"] += st.session_state["last_cost"][-1]
             st.caption(
                 f"Running Cost: {st.session_state['running_cost']:.4f} ¢")
@@ -142,3 +146,17 @@ if prompt := st.chat_input():
 
 with st.expander("Show message history"):
     st.write(st.session_state.messages)
+
+
+# create a button to clear the chat history
+if st.button("Clear chat history"):
+    st.success("Clearing chat history...")
+    time.sleep(1)
+    st.session_state.messages = [
+        {"role": "assistant", "content": "How can I help you?"}
+    ]
+    st.session_state["running_cost"] = 0
+    st.session_state["prompt_tokens"] = [0]
+    st.session_state["completion_tokens"] = [0]
+    st.session_state["last_cost"] = [0]
+    st.experimental_rerun()
