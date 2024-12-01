@@ -1,9 +1,10 @@
 from openai import OpenAI
 import streamlit as st
-from utils import api_key_check, get_model_cost, calc_total_cost
+from utils import api_key_check, get_model_cost, calc_total_cost, plot_model_costs
 import pandas as pd
 from st_pages import Page, show_pages
 import time
+import matplotlib.pyplot as plt
 
 show_pages([
     Page("app.py", "GPT Chatbot", ""),
@@ -12,9 +13,15 @@ show_pages([
 
 
 with st.expander("Show cost table"):
-    file_path = r"./assets/openai_models.csv"
-    prices = pd.read_csv(file_path)
-    st.write(prices)
+    file_path = r"./assets/openai_model_table.csv"
+    prices_df = pd.read_csv(file_path)
+    model_list = list(prices_df["Model"])
+    st.write(prices_df)
+    # Create a bar chart comparing input and output token costs
+    fig = plot_model_costs(prices_df)
+    st.pyplot(fig)
+
+
 
 if "valid_key" not in st.session_state:
     st.session_state["valid_key"] = False
@@ -68,9 +75,9 @@ with st.sidebar:
 
     # radio button for selecting the model
     model_choice = st.radio(
-        "Select a model", ["gpt-3.5-turbo", "gpt-4o", "gpt-4-turbo"], index=0
+        "Select a model", model_list, index=0
     )
-    input_cost, output_cost = get_model_cost(model_choice, prices)
+    input_cost, output_cost = get_model_cost(model_choice, prices_df)
     st.write(f"**Input cost:** {input_cost:.5f} ¢/token")
     st.write(f"**Output cost:** {output_cost:.5f} ¢/token")
 
