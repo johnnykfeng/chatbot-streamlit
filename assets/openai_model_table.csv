@@ -1,0 +1,6 @@
+Model,Input Tokens ($/1M),Cached Input Tokens ($/1M),Output Tokens ($/1M),Training Tokens ($/1M),Context Length,Knowledge Cutoff,Notes
+gpt-4o-mini,0.15,0.075,0.6,3,128K,24-Jul,Smaller  cost-effective version of GPT-4o.
+gpt-4o,2.5,1.25,10,25,128K,24-May,Multimodal model processing text  images  and audio.
+gpt-3.5-turbo-0125,0.5,0.5,1.5,8,16K,N/A,Versatile model suitable for various applications.
+o1-preview,15,7.5,60,N/A,128K,23-Oct,Advanced reasoning model for complex tasks.
+o1-mini,3,1.5,12,N/A,128K,23-Oct,Cost-efficient model tailored for coding math and science
