@@ -22,7 +22,6 @@ with st.expander("Show cost table"):
     st.pyplot(fig)
 
 
-
 if "valid_key" not in st.session_state:
     st.session_state["valid_key"] = False
 
@@ -73,6 +72,8 @@ with st.sidebar:
         st.session_state["valid_key"] = False
         st.error("Incorrect password")
 
+    system_prompt = st.text_area("System Prompt", value="You are a helpful assistant.")
+
     # radio button for selecting the model
     model_choice = st.radio(
         "Select a model", model_list, index=0
@@ -90,16 +91,19 @@ st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 if not openai_api_key and not st.session_state["valid_key"]:
     st.info("Please add your OpenAI API key to continue.")
     st.stop()
-else:
+else: 
     for i, msg in enumerate(st.session_state.messages):
         st.chat_message(msg["role"]).write(msg["content"])
-        if msg["role"] == "assistant":
-            j = int(i/2)
-            st.caption(
-                f" Prompt tokens: {st.session_state['prompt_tokens'][j]}" +
-                f" | Completion tokens: {st.session_state['completion_tokens'][j]}" +
-                f" | Answer cost: {st.session_state['last_cost'][j]:.4f} ¢"
-            )
+        if not stream_choice:
+            if msg["role"] == "assistant": # only show cost after assistant messages
+                # j = int(i/2) # use this for displaying cost of each message 
+                j = -1 # less buggy
+                st.caption(
+                    f" Prompt tokens: {st.session_state['prompt_tokens'][j]}" +
+                    f" | Completion tokens: {st.session_state['completion_tokens'][j]}" +
+                    f" | Answer cost: {st.session_state['last_cost'][j]:.4f} ¢"
+                )
+    # st.caption(f"Running Cost: {st.session_state['running_cost']:.4f} ¢")
 
 # Check if the user has entered a prompt in the chat input field
 if prompt := st.chat_input():
@@ -116,11 +120,15 @@ if prompt := st.chat_input():
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
+
+        message_history = [
+            {"role": m["role"], "content": m["content"]}
+            for m in st.session_state.messages]
         response = client.chat.completions.create(
             model=model_choice,
             messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
+                {"role": "system", "content": system_prompt},
+                *message_history
             ],
             stream=stream_choice,
         )
