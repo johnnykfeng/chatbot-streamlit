@@ -1,6 +1,6 @@
 streamlit==1.36.0
 st-pages==0.5.0
-openai==1.35.8
+openai==1.65.2
 toml==0.10.2
 langchain==0.2.6
 pandas==2.0.3

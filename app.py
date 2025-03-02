@@ -9,13 +9,15 @@ import matplotlib.pyplot as plt
 show_pages([
     Page("app.py", "GPT Chatbot", ""),
     Page("pages/claude.py", "Claude Chatbot", ""),
+    Page("pages/openai_reasoning.py", "OpenAI Reasoning", ""),
 ])
 
 
 with st.expander("Show cost table"):
     file_path = r"./assets/openai_model_table.csv"
     prices_df = pd.read_csv(file_path)
-    model_list = list(prices_df["Model"])
+    # model_list = list(prices_df["Model"])
+    model_list = ["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"]
     st.write(prices_df)
     # Create a bar chart comparing input and output token costs
     fig = plot_model_costs(prices_df)
